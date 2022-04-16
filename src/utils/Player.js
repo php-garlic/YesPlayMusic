@@ -10,6 +10,7 @@ import store from '@/store';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm';
 import { isCreateMpris, isCreateTray } from '@/utils/platform';
+import { SearchMode } from '@unblockneteasemusic/rust-napi';
 
 const PLAY_PAUSE_FADE_DURATION = 200;
 
@@ -368,22 +369,56 @@ export default class {
   }
   async _getAudioSourceFromUnblockMusic(track) {
     console.debug(`[debug][Player.js] _getAudioSourceFromUnblockMusic`);
+
     if (
       process.env.IS_ELECTRON !== true ||
       store.state.settings.enableUnblockNeteaseMusic === false
     ) {
       return null;
     }
-    const source = await ipcRenderer.invoke(
+
+    /**
+     *
+     * @param {string=} searchMode
+     * @returns {import("@unblockneteasemusic/rust-napi").SearchMode}
+     */
+    const determineSearchMode = searchMode => {
+      switch (searchMode) {
+        case 'fast-first':
+          return SearchMode.FastFirst;
+        case 'order-first':
+          return SearchMode.OrderFirst;
+        default:
+          return SearchMode.FastFirst;
+      }
+    };
+
+    /** @type {import("@unblockneteasemusic/rust-napi").RetrievedSongInfo | null} */
+    const retrieveSongInfo = await ipcRenderer.invoke(
       'unblock-music',
+      store.state.settings.unmSource,
       track,
-      store.state.settings.unmSource
+      /** @type {import("@unblockneteasemusic/rust-napi").Context} */ ({
+        enableFlac: store.state.settings.unmEnableFlac || null,
+        proxyUri: store.state.settings.unmProxyUri || null,
+        searchMode: determineSearchMode(store.state.settings.searchMode),
+        config: {
+          'joox:cookie': store.state.settings.unmJooxCookie || null,
+          'ytdl:exe': store.state.settings.unmYtdlExe || null,
+        },
+      })
     );
-    if (store.state.settings.automaticallyCacheSongs && source?.url) {
-      // TODO: 将unblockMusic字样换成真正的来源（比如酷我咪咕等）
-      cacheTrackSource(track, source.url, 128000, 'unblockMusic');
+
+    if (store.state.settings.automaticallyCacheSongs && retrieveSongInfo?.url) {
+      cacheTrackSource(
+        track,
+        retrieveSongInfo.url,
+        128000,
+        `unm:${retrieveSongInfo.source}`
+      );
     }
-    return source?.url;
+
+    return retrieveSongInfo?.url;
   }
   _getAudioSource(track) {
     return this._getAudioSourceFromCache(String(track.id))
