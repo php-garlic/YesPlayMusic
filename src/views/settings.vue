@@ -247,16 +247,17 @@
             </div>
           </div>
         </div>
+
         <div class="item">
           <div class="left">
             <div class="title"> 备选音源 </div>
             <div class="description">
               音源的具体代号
               <a
-                href="https://github.com/UnblockNeteaseMusic/server#音源清单"
+                href="https://github.com/UnblockNeteaseMusic/server-rust/blob/main/README.md#支援的所有引擎"
                 target="_blank"
               >
-                可以点此到 UNM 的说明页面查询 </a
+                可以点此到 UNM 的说明页面查询。 </a
               ><br />
               多个音源请用 <code>,</code> 逗号分隔。<br />
               留空则使用 UNM 内置的默认值。
@@ -264,12 +265,80 @@
           </div>
           <div class="right">
             <input
-              id="unm-source"
               v-model="unmSource"
               class="text-input"
               placeholder="例 bilibili, kuwo"
             />
-            <label for="unm-source"></label>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="left">
+            <div class="title"> 啟用無損音質 (FLAC) </div>
+          </div>
+          <div class="right">
+            <div class="toggle">
+              <input
+                id="unm-enable-flac"
+                v-model="unmEnableFlac"
+                type="checkbox"
+              />
+              <label for="unm-enable-flac" />
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="left">
+            <div class="title"> 用於 UNM 的 Proxy 伺服器 </div>
+            <div class="description">
+              請求如 YouTube 音源服務時要使用的 Proxy 伺服器。<br />
+              留空則不進行相關設定。
+            </div>
+          </div>
+          <div class="right">
+            <input
+              v-model="unmProxyUri"
+              class="text-input"
+              placeholder="例 https://192.168.11.45"
+            />
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="left">
+            <div class="title"> Joox 引擎的 Cookie </div>
+            <div class="description">
+              <a
+                href="https://github.com/UnblockNeteaseMusic/server-rust/tree/main/engines#joox-cookie-設定說明"
+                target="_blank"
+                >設定說明請參見此處。</a
+              >
+              留空則不進行相關設定。
+            </div>
+          </div>
+          <div class="right">
+            <input
+              v-model="unmJooxCookie"
+              class="text-input"
+              placeholder="wmid=..; session_key=.."
+            />
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="left">
+            <div class="title"> YtDl 引擎要使用的 youtube-dl 執行檔 </div>
+            <div class="description">
+              預設使用 <code>yt-dlp</code>。 留空則不進行相關設定。
+            </div>
+          </div>
+          <div class="right">
+            <input
+              v-model="unmYtDlExe"
+              class="text-input"
+              placeholder="ex. youtube-dl"
+            />
           </div>
         </div>
       </section>
@@ -944,7 +1013,51 @@ export default {
       set(value) {
         this.$store.commit('updateSettings', {
           key: 'unmSource',
-          value: value.length ? value : null,
+          value: value.length && value,
+        });
+      },
+    },
+    unmEnableFlac: {
+      get() {
+        return this.settings.unmEnableFlac || false;
+      },
+      set(value) {
+        this.$store.commit('updateSettings', {
+          key: 'unmEnableFlac',
+          value: value || false,
+        });
+      },
+    },
+    unmProxyUri: {
+      get() {
+        return this.settings.unmProxyUri || '';
+      },
+      set(value) {
+        this.$store.commit('updateSettings', {
+          key: 'unmProxyUri',
+          value: value.length && value,
+        });
+      },
+    },
+    unmJooxCookie: {
+      get() {
+        return this.settings.unmJooxCookie || '';
+      },
+      set(value) {
+        this.$store.commit('updateSettings', {
+          key: 'unmJooxCookie',
+          value: value.length && value,
+        });
+      },
+    },
+    unmYtDlExe: {
+      get() {
+        return this.settings.unmYtDlExe || '';
+      },
+      set(value) {
+        this.$store.commit('updateSettings', {
+          key: 'unmYtDlExe',
+          value: value.length && value,
         });
       },
     },
