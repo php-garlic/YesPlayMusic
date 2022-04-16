@@ -401,7 +401,7 @@ export default class {
       /** @type {import("@unblockneteasemusic/rust-napi").Context} */ ({
         enableFlac: store.state.settings.unmEnableFlac || null,
         proxyUri: store.state.settings.unmProxyUri || null,
-        searchMode: determineSearchMode(store.state.settings.searchMode),
+        searchMode: determineSearchMode(store.state.settings.unmSearchMode),
         config: {
           'joox:cookie': store.state.settings.unmJooxCookie || null,
           'ytdl:exe': store.state.settings.unmYtDlExe || null,
