@@ -172,6 +172,7 @@ export function initIpcMain(win, store, trayEventEmitter) {
           ? parseSourceStringToList(unmExecutor, sourceListString)
           : ['kuwo', 'migu', 'ytdl', 'bilibili'];
       log(`[UNM] using source: ${sourceList.join(', ')}`);
+      log(`[UNM] using configuration: ${JSON.stringify(context)}`);
 
       try {
         // TODO: tell users to install yt-dlp.
