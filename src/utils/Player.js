@@ -10,7 +10,6 @@ import store from '@/store';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm';
 import { isCreateMpris, isCreateTray } from '@/utils/platform';
-import { SearchMode } from '@unblockneteasemusic/rust-napi';
 
 const PLAY_PAUSE_FADE_DURATION = 200;
 
@@ -383,13 +382,15 @@ export default class {
      * @returns {import("@unblockneteasemusic/rust-napi").SearchMode}
      */
     const determineSearchMode = searchMode => {
+      // 'fast-first' = 0; 'order-first' = 1
+      // refer to @unblockneteasemusic/rust-napi > export const enum SearchMode
       switch (searchMode) {
         case 'fast-first':
-          return SearchMode.FastFirst;
+          return 0;
         case 'order-first':
-          return SearchMode.OrderFirst;
+          return 1;
         default:
-          return SearchMode.FastFirst;
+          return 0;
       }
     };
 
