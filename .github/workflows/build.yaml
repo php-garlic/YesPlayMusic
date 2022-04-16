@@ -49,15 +49,15 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           ${{ env.YARN_INSTALL_NOPT }} \
-            @unblockneteasemusic/rust-napi-win32-x64-msvc
+            @unblockneteasemusic/rust-napi-win32-x64-msvc@next
         shell: bash
 
       - name: Install UNM dependencies for macOS
         if: runner.os == 'macOS'
         run: |
           ${{ env.YARN_INSTALL_NOPT }} \
-            @unblockneteasemusic/rust-napi-darwin-x64 \
-            @unblockneteasemusic/rust-napi-darwin-arm64 \
+            @unblockneteasemusic/rust-napi-darwin-x64@next \
+            @unblockneteasemusic/rust-napi-darwin-arm64@next \
             dmg-license
         shell: bash
 
@@ -65,9 +65,9 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           ${{ env.YARN_INSTALL_NOPT }} \
-            @unblockneteasemusic/rust-napi-linux-x64-gnu \
-            @unblockneteasemusic/rust-napi-linux-arm64-gnu \
-            @unblockneteasemusic/rust-napi-linux-arm-gnueabihf
+            @unblockneteasemusic/rust-napi-linux-x64-gnu@next \
+            @unblockneteasemusic/rust-napi-linux-arm64-gnu@next \
+            @unblockneteasemusic/rust-napi-linux-arm-gnueabihf@next
 
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
